@@ -1,0 +1,622 @@
+
+
+
+#-------------------------SESSION -04-----------------------------------------------------------------------#
+
+
+#1. Handling Dates - Converting String to date
+
+# Dates are reprsented by dates class
+# Time is reprsented by POSIXct and POSIXlt
+
+# Internally the dates are stored as number of days since 01-01-1970
+# Times are stored as number of seconds from 01-01-1970
+
+x<- as.Date("1970-01-01") # year , month and day --> it is defined like that .
+x
+strftime(x,format = "%Y") # strftime extracts the day,month and year from date functions as well as date and time functions
+
+z<-as.Date("2019-07-06")
+z
+z<-unclass(z)
+z
+z<- as.Date(z,origin = "1970-01-01")
+z
+
+
+unclass(x) # it will give zero since number of days from 1970-01-01 is zero
+
+unclass(as.Date("1970-01-02"))
+
+# Before 1970 will represent the data as negetive numbers
+
+unclass(as.Date("1966-09-17"))
+
+Dt <- c("08/03/2019","04/7/2018") 
+# now this date is not in date format,hence we use lubridate
+class(Dt)
+abc<-lubridate::mdy(Dt)
+abc
+class(abc)
+
+# Another Method of doing that without lubridate
+Dt <- c("08/03/2019","04/7/2018")
+class(Dt)
+w<- as.Date(Dt, format = "%m/%d/%Y") # This has converted into date format , m is small
+w
+
+
+format(w,format="%B|%d|%Y") # We can convert the date into our format
+format(w,format="%b|%d|%Y")
+format(w,format="%d|%B|%Y") # This is indian way of wrting date
+w
+unclass(w)
+w
+
+
+#----------------------------------------------------------------------------------------#
+
+
+
+# Time -> POSIXct is very large integer under the hood , it is useful when you want to store time in dataframe 
+# POSIXlt is ueful because it stores the day of the week , day of the year , day of the month , month #
+
+
+# generic functions work on dates 
+# Weekdays : give week of the days
+# month : give month name
+# quaters : give quater numbers(Q1,Q2,Q3,Q4)
+
+
+y <- Sys.time()  # NOTE : This is already in POSIXct format and we have converted to POSXlt format .
+y
+class(y)
+
+unclass(y)
+
+p <- as.POSIXlt(y)
+p
+
+
+class(p)
+
+p<-unclass(p) # check its important , it became list ,earler class was POSIXlt
+p # it is list
+names(p)
+
+p$sec # It will give the seconds of time
+p$hour # it will give the hours
+p$min # it will give the minutes
+p$wday # It will give the week day
+p$mon
+
+
+datestring <- c("January 10 , 2012 10:40","December 9, 2011 09:10 ")
+
+# clean using lubridate
+abc <- lubridate::mdy_hm(datestring)
+abc
+?force_tz
+force_tz(abc,"Asia/Kolkata")
+class(abc)
+
+# clean without using lubridate
+datestring <- c("January 10 , 2012 10:40","December 9, 2011 09:10 ")
+class(datestring) # character
+datestring
+?strptime
+x<- strptime(datestring, format = "%B %d ,%Y %H:%M")
+x
+class(x) # POSIXlt
+
+
+p<- unclass(x)
+p
+p$year
+
+
+# Now i want to extract month from it
+strftime(x,format = "%m")
+# I want to extract years from it
+strftime(x,format = "%Y")
+# Now I want to extract day from it 
+strftime(x,format = "%d")
+# Now I want to extract hours from it
+strftime(x, format = "%H")
+# Now I want to extract seconds from it
+strftime(x, format = "%M")
+
+
+x<- as.Date("2012-01-01")
+x
+y <- strptime("9 Jan 2011 11:34:21", format = "%d %b %Y %H:%M:%S")
+y
+class(x)
+class(y)
+x-y # We canot perform operaions on x and y since they are from diffrent class
+
+
+# We can perform operaions on the same class
+
+x1<- as.Date("2019-08-09")
+y1<- as.Date("2019-08-10")
+y1-x1
+
+
+
+dateString <- c("06-07-19", "06-07-20", "06-07-21","06-07-22", "06-07-23")
+dateString
+class(datestring)
+str(dateString)
+
+abc<-lubridate::dmy(dateString)
+abc
+strftime(abc,format = "%Y")
+
+
+#as.Date function handles dates (without times)
+#the contributed library chron handles dates and times, but does not control for time zones
+#POSIXct and POSIXlt classes allow for dates and times with control for time zones
+
+dateString
+class(dateString)
+# using lubridate function
+abc1<-lubridate::dmy(dateString)
+abc1
+class(abc1)
+
+# without using lubridate
+dateValue <- as.Date(x = dateString,format = "%d-%m-%y")
+dateValue
+class(dateValue)
+
+# extracting day from the date function :
+strftime(dateValue,format = "%y")
+# extracting year from the date functiom
+strftime(dateValue,format = "%Y")
+
+str(dateValue)
+
+# Lets convert date class into date and time class and check wther its orking or not 
+dateTimeValue <- strptime(x = dateString,format = "%d-%m-%y")
+dateTimeValue
+# To extract date from the date
+strftime(dateTimeValue,format = "%d")
+
+
+# to extract year from the date
+strftime(dateTimeValue,format = "%Y")
+
+str(dateTimeValue)
+
+#Notice the difference between datevalue and datetimevalue
+
+anotherDate <- "16##25-$April"
+anotherDate
+lubridate::ydm(anotherDate)
+
+anotherDateValue <- as.Date(x = anotherDate,format = "%y##%d-$%B") 
+# we didnt give m over here since april was writen, if 04 have written than we have given %m
+anotherDateValue
+
+getwd()
+setwd("C:/Users/Akshay.Gupta/Desktop/R")
+
+# Show them the attendance file
+dat <- read.csv("Attendance Detail.csv")
+View(dat)
+str(dat)
+dat$date <- as.Date(dat$Attendance.Date,format = "%d-%b-%Y")
+
+strftime(dat$date , format = "%d")
+
+View(dat) # I end up making one more column names date
+
+
+#What is the objective of using paste?
+
+dat$Comb_in <- paste(dat$Attendance.Date,dat$In.Time)
+dat$Comb_out <- paste(dat$Attendance.Date,dat$Last.Out.Time)
+View(dat) # I end up attaching two more columns named como in and omboout
+str(dat)
+
+
+# Notice the difference between using %I and %H along with %p
+
+
+#Internally, Date objects are stored as the number of days since January 1, 1970, 
+#using negative numbers for earlier dates.
+#The as.numeric function can be used to convert a Date object to its internal form.
+
+#2. Dates/DateTime as Numbers
+dateTimeValue
+strftime(dateTimeValue,format = "%Y")
+dateValue
+as.numeric(dateTimeValue)
+as.numeric(dateValue)
+
+# Why is it not equal ?? 
+
+dateString
+dateTimeValue
+as.numeric(dateTimeValue)/(60*60*24)
+
+
+# 3. Converting Date/Datetime to string
+
+?strftime
+dateTimeValue
+strftime(dateTimeValue,format = "%y-%m-%d") # It has removed the time from date
+dat$In.datetime
+c<-strftime(dat$In.datetime,format = "%y/%m/%d") # It removes the time and we are left with date
+c
+class(c)
+c<-as.Date(c,format = "%y/%m/%d")
+class(c)
+c
+format(c,format="%d##%B##%Y")
+try1<- format(c,format="%d##%B##%Y")
+View(try1)
+View(c)
+class(try1) # character
+
+?format
+dat$In.datetime
+format(dat$In.datetime,format = "%m/%Y/%d")
+
+#What is the difference between strptime and strftime??
+#strptime() takes a character vector and makes a date-time object. 
+#That is input.
+
+#strftime() takes a date-time or date object and makes an character vector and also strftime is used for extraction
+#That is output
+
+
+# 4. Extracting the Components out of date
+# Extract Year
+dateTimeValue
+strftime(dateTimeValue,format = "%Y")
+dat$In.datetime
+strftime(dat$In.datetime,format = "%Y")
+
+
+# Extract Month
+dateValue
+class(dateValue)
+strftime(dateValue, format ="%m") 
+strftime(dateValue, format ="%b") 
+strftime(dateValue, format ="%B") 
+
+
+#How should I modify the above the syntax to get the numeric value of month
+strftime(dat$In.datetime, format ="%B")
+
+# Extract Weekday 
+strftime(dateValue, format = "%A") # Weekday name
+strftime(dat$In.datetime, format="%A")
+
+strftime(dat$In.datetime, format = "%w") 
+strftime(dateValue, format = "%w") # Weekday as decimal numbeer , sunday is 0
+?strftime
+
+dateValue
+class(dateValue)
+weekdays(dateValue) # o find weekday
+months(dateValue) # to find month
+quarters(dateValue) # to find Quaters
+
+
+#5. Manipulations on date
+
+today <- Sys.Date()
+thisMoment <- Sys.time()
+today
+thisMoment
+
+
+# 10 days after today 
+today + 10
+
+difftime(today, today+10, units = "days")
+difftime(today+10, today, units = "hours")
+
+# Throws error - showcase what arguments it can take
+difftime(today+10, today, units = "seconds")
+
+# Show correct way
+difftime(today+10, today, units = "secs")
+
+difftime(thisMoment, today)
+
+difftime(dat$Out.datetime,dat$In.datetime,units = "hours")
+
+difftime(dat$In.Time,dat$Last.Out.Time,units = 'hours') 
+# we are getting error since both are in character string
+
+
+
+
+
+
+
+#-------------------------------- Text Manipulation----------------------------------------------#
+
+
+
+#----------------REGULAR EXPRESSION ---------------------------------------------------#
+
+
+#grep and grepl searchs for regular expression /pattern in the character vector .
+#regexpr , gregexpr searh a character vector for the regular epression matches and return idices of the string 
+#sub and gsub search the character vector and replaces the match with another string
+#regexec easier to explain through dmonstration
+
+# Some limitations of grep function , grep functione tells you the which string in the character vctor matches a certain pattern
+# but it doesnt tel you where the match occurs or what match is ,hence we use regexpr in those cases
+# regexpr gives you the index into each string where the match begins and length of that match for that string
+
+
+#-----------------grep and grepl--------------------------------#
+
+
+
+name_vector <- c("america","americas","unites state of america", "japan","china","USA")
+name_vector
+grep("america",name_vector)
+grep("america",name_vector,value = T)
+grep("america(.*)",name_vector)
+
+pattern <- "america|US"
+grep(pattern,name_vector)
+
+name_vector[grep(pattern,name_vector)]
+
+name_vector[grep(pattern,name_vector)]<- "Singapore"
+name_vector
+
+grepl("Singapore",name_vector)
+
+text<- c("This is the first example sentence","This is second example sentence")
+text
+
+grep("second",text)
+grep("second",text,value = T)
+
+
+
+#------------------------------sub and gsub-------------------------------------------------#
+
+
+x1<- c("R Tutorial R Tutorial", "PHP TUTORIAL R Tutorial ","HTML Tutorial , maths Tutorial")
+x1
+sub("Tutorial","example",x1) # sub function looks at the first tutorial in every element and changed that
+
+gsub("Tutorial","example",x1)
+gsub("Tutorial","example",x1,ignore.case = T)
+
+
+
+#------------------------------substr------------------------------------------#
+
+substr("Tutorial",2,6)
+
+x2<- c("green","red","blue")
+substr(x2,1,3)
+substr(x2,nchar(x2)-2,nchar(x2))
+
+
+#-----------------------------Regexpr--------------------------------------------#
+
+#This function returns the character position in the provided string .
+# Also it provides the lenghth of the match
+
+x1<- c("R Tutorial R Tutorial", "PHP TUTORIAL R Tutorial ","HTML Tutorial , maths Tutorial")
+x1
+regexpr("Tutorial",x1) # 3,16,6
+
+regexpr("Tutorial",x1,ignore.case = T)
+
+text<- c("This is the first example sentence","This is second example sentence")
+regexpr("second",text)
+
+text1<- "Percy,1910,1912"
+text
+regexpr("1910",text1) # I will find the position and length of 1910
+substr(text1,7,7+4-1)  # I have extracted the year from it .
+
+
+gregexpr("9",text1) #It will give both the 9 positions
+
+
+
+#-----------------------------strsplit--------------------------------------#
+
+
+x10<- "I have edureka and courses offered by them"
+strsplit(x10," ") # I got the List
+
+
+toupper(x10) # It will make all in capital
+tolower(x10) # it will make al in Lower
+
+e<- strsplit("123_456_789","_")
+class(strsplit("123_456_789","_"))
+e
+e[1]
+e[[1]]
+e[[1]][1]
+
+
+# paste
+pi
+PI = paste("The life of", pi)
+PI
+
+
+# paste
+IloveR = paste("I", "love", "R", sep = "-")
+IloveR
+
+
+# paste with objects of different lengths
+paste("X", 1:5, sep = ".")
+
+
+# paste with collapsing
+a <- paste(1:3, c("!", "?", "+"), sep = "-", collapse = " ") 
+# collapse will make one string
+a
+length(a)
+
+
+# paste without collapsing
+b <-paste(1:3, c("!", "?", "+"), sep = "-")
+b
+length(b)
+
+# collapsing with paste0
+paste("lets", "collapse", "all", "these", "words" , sep = "-")
+paste("lets", "collapse", "all", "these", "words")
+paste0("lets", "collapse", "all", "these", "words")
+
+
+# 2.Printing characters
+#2.1 print 
+my_string = "programming with data is fun"
+# print string
+print(my_string)
+
+# print without quotes
+print(my_string, quote = FALSE)
+
+#2.2 noquote
+noquote(my_string)
+
+#2.3 cat()
+#Compared to noquote(), cat() does not print the numeric line indicator ([1] in this case)
+#cat() prints its arguments without quotes
+#usefulness of cat() is when we have two or more strings that we want to concatenate
+# Advantage of using cat is hat inverted quotes are not there
+
+cat(my_string)
+
+# concatenate and print
+cat(my_string, "with R")
+
+# especifying sep
+cat(my_string, "with R", sep = " =) ")
+
+#3.5 Character translation with chartr()
+
+# replace a by A
+abc <- "This is a boring string"
+gsub("a","A",abc)
+chartr("a", "A", "This is a boring string")
+
+# incorrect use
+chartr("ai", "X", "This is a bad example")   
+##Which function will I use if I want to make the given change
+
+# multiple replacements 
+crazy = c("Heres to the crazy ones", "The misfits", "The rebels")
+chartr("aei", "#!?", crazy)   #a will get replaced by #, e by !, i by ?
+
+
+
+#4. Text manipulations with package "stringr"
+
+install.packages("stringr")
+library(stringr)
+str_c("May", "The", "Force", "Be", "With", "You")
+
+# removing zero length objects
+str_c("May", "The", "Force", NULL, "Be", "With", "You", character(0))
+str_join("May", "The", "Force", "Be", "With", "You", sep = "-")
+
+# some text (NA included) 
+
+some_text = c("one", "two", "three", NA, "five")
+some_text
+str_length(some_text)
+
+
+some_factor = factor(c(1, 1, 1, 2, 2, 2), labels = c("good", "bad"))
+some_factor
+nchar(some_factor)
+str_length(some_factor)
+
+# some text
+lorem = "Lorem Ipsum"
+# apply 
+str_sub
+str_sub(lorem, start = 1, end = 5)
+
+# default usage
+
+str_dup("hola", 3)
+rep("hol",3)
+
+## [1] "holaholahola
+
+# pad both sides
+str_pad("adios", width = 7, side = "both")
+## [1] " adios "
+
+# quote (by Douglas Adams)
+some_quote = c(
+  "I may not have gone",
+  "where I intended to go,",
+  "but I think I have ended up",
+  "where I needed to be")
+
+# some_quote in a single paragraph
+some_quote = paste(some_quote, collapse = " ")
+
+# display paragraph with width=30
+cat(str_wrap(some_quote, width = 30))
+
+# some sentence
+change = c("Be the change", "you want to be")
+# extract first word
+
+word(change, 1)
+## [1] "Be" "you"
+
+#5.Functions for Regular expressions
+
+# some text
+text = c("one word", "a sentence", "you and me", "three two one")
+# pattern
+pat = "one"
+# default usage
+grep(pat, text)
+
+# with value (showing matched text)
+grep(pat, text, value = TRUE)
+
+# with invert (showing unmatched parts)
+grep(pat, text, invert = TRUE)
+
+Rstring = c("The R Foundation",
+            "for Statistical Computing",
+            "R is FREE software",
+            "R is a collaborative project")
+
+# substitute R with RR
+sub("R", "RR", Rstring)
+
+# substitute
+gsub("R", "RR", Rstring)
+
+# a sentence
+sentence = c("R is a collaborative project with many contributors")
+# split into words
+strsplit(sentence, " ")
+
+
+
+
+
+
+
+
